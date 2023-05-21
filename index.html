@@ -1,15 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarea</title>
-    <script>
-        
-  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indicadores Económicos</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    #indicator-value {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Indicadores Económicos</h1>
+    <div class="form-group">
+      <label for="indicator-select">Seleccione un indicador:</label>
+      <select id="indicator-select" class="form-control">
+        <option value="">-- Seleccione --</option>
+        <option value="uf">Unidad de Fomento (UF)</option>
+        <option value="dolar">Dólar</option>
+        <option value="euro">Euro</option>
+        <option value="utm">Unidad Tributaria Mensual (UTM)</option>
+      </select>
+    </div>
+    <div id="indicator-value"></div>
+  </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const indicatorSelect = document.getElementById('indicator-select');
+    const indicatorValue = document.getElementById('indicator-value');
+
+    indicatorSelect.addEventListener('change', () => {
+      const indicator = indicatorSelect.value;
+
+      if (indicator === '') {
+        indicatorValue.innerHTML = '';
+        return;
+      }
+
+      axios.get(`https://mindicador.cl/api/${indicator}`)
+        .then(response => {
+          const data = response.data;
+
+          indicatorValue.innerHTML = `
+            <h2>${data.nombre}</h2>
+            <p>Valor: ${data.serie[0].valor}</p>
+            <p>Unidad de medida: ${data.unidad_medida}</p>
+            <p>Fecha de actualización: ${data.serie[0].fecha}</p>
+          `;
+        })
+        .catch(error => {
+          console.error(error);
+          indicatorValue.innerHTML = 'Error al obtener el indicador.';
+        });
+    });
+  </script>
 </body>
 </html>
