@@ -1,0 +1,15 @@
+body {
+    padding: 20px;
+    background-color: aquamarine;
+  }
+  .container {
+    max-width: 600px;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  #indicator-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
