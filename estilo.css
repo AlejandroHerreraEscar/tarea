@@ -1,7 +1,10 @@
 body {
     padding: 20px;
-    background-color: aquamarine;
-  }
+      background-image: url("dinero.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
   .container {
     max-width: 600px;
   }

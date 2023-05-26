@@ -6,6 +6,10 @@
   <title>Indicadores Económicos</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="estilo.css">
+  <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
 </head>
 <body>
   <div class="container">
@@ -41,10 +45,10 @@
           const data = response.data;
 
           indicatorValue.innerHTML = `
-            <h2>${data.nombre}</h2>
-            <p>Valor: ${data.serie[0].valor}</p>
-            <p>Unidad de medida: ${data.unidad_medida}</p>
-            <p>Fecha de actualización: ${data.serie[0].fecha}</p>
+            <h2 class="animate__animated animate__rotateInDownLeft">${data.nombre}</h2>
+            <p class="animate__animated animate__backInDown">Valor: ${data.serie[0].valor}</p>
+            <p class="animate__animated animate__backInDown">Unidad de medida: ${data.unidad_medida}</p>
+            <p class="animate__animated animate__backInDown">Fecha de actualización: ${data.serie[0].fecha}</p>
           `;
         })
         .catch(error => {
