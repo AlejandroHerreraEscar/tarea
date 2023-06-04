@@ -1,39 +1,105 @@
 var indicatorsSelect = document.getElementById('indicator-select');
+var indicatorValue = document.getElementById('indicator-value');
+var chartContainer = document.getElementById('chart-container');
+var chart = null;
+var selectedDate = null; // Variable para almacenar la fecha seleccionada
 
 fetch('https://mindicador.cl/api')
   .then(function(response) {
     return response.json();
   })
   .then(function(dailyIndicators) {
-    document.getElementById("UF").innerHTML = 'El valor actual de la UF es $' + dailyIndicators.uf.valor;
-    document.getElementById("DolarO").innerHTML = 'El valor actual del Dólar observado es $' + dailyIndicators.dolar.valor;
-    document.getElementById("DolarA").innerHTML = 'El valor actual del Dólar acuerdo es $' + dailyIndicators.dolar_intercambio.valor;
-    document.getElementById("Euro").innerHTML = 'El valor actual del Euro es $' + dailyIndicators.euro.valor;
-    document.getElementById("IPC").innerHTML = 'El valor actual del IPC es ' + dailyIndicators.ipc.valor + '%';
-    document.getElementById("UTM").innerHTML = 'El valor actual de la UTM es $' + dailyIndicators.utm.valor;
-    document.getElementById("IVP").innerHTML = 'El valor actual del IVP es $' + dailyIndicators.ivp.valor;
-    document.getElementById("Imacec").innerHTML = 'El valor actual del Imacec es ' + dailyIndicators.imacec.valor + '%';
+    for (const key in dailyIndicators) {
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = dailyIndicators[key].nombre;
+      indicatorsSelect.appendChild(option);
+    }
   })
   .catch(function(error) {
     console.log('Request failed', error);
   });
 
-axios.get('https://mindicador.cl/api')
-  .then(function(response) {
-    const indicators = response.data;
-    for (const key in indicators) {
-      const option = document.createElement('option');
-      option.value = key;
-      option.textContent = indicators[key].nombre;
-      indicatorsSelect.appendChild(option);
-    }
-  });
-
 indicatorsSelect.addEventListener('change', function() {
-  buscar_moneda(this.value);
+  var selectedIndicator = this.value;
+  fetchData(selectedIndicator, selectedDate); // Mostrar información al cambiar la moneda seleccionada
 });
 
-function buscar_moneda(option) {
-  console.log(option);
-}
+function fetchData(selectedIndicator, selectedDate) {
+  var url = 'https://mindicador.cl/api/' + selectedIndicator;
 
+  if (selectedDate) {
+    var formattedDate = formatDate(selectedDate);
+    url += '/' + formattedDate;
+  }
+
+  fetch(url)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(indicatorData) {
+      var values = indicatorData.serie.map(function(data) {
+        return data.valor;
+      });
+
+      var min = Math.min(...values);
+      var max = Math.max(...values);
+      var sum = values.reduce(function(acc, val) {
+        return acc + val;
+      }, 0);
+      var average = sum / values.length;
+
+      var indicatorInfo = `
+        <h2>${indicatorData.nombre}</h2>
+        <p>Fecha desde: ${indicatorData.serie[0].fecha}</p>
+        <p>Valor actual: ${indicatorData.serie[indicatorData.serie.length - 1].valor} ${indicatorData.unidad_medida}</p>
+        <p>Mínimo: ${min}</p>
+        <p>Máximo: ${max}</p>
+        <p>Promedio: ${average.toFixed(2)}</p>
+      `;
+
+      indicatorValue.innerHTML = indicatorInfo;
+
+      if (chart) {
+        chart.destroy();
+      }
+
+      var ctx = chartContainer.getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: indicatorData.serie.map(function(data) {
+            return data.fecha;
+          }),
+          datasets: [
+            {
+              label: 'Valor',
+              data: values,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          aspectRatio: 0.5, // Ajusta este valor para reducir el tamaño del gráfico
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    })
+    .catch(function(error) {
+      console.log('Request failed', error);
+    });
+}
+function formatDate(date) {
+  var year = date.getFullYear();
+  var month = ('0' + (date.getMonth() + 1)).slice(-2);
+  var day = ('0' + date.getDate()).slice(-2);
+  return year + '-' + month + '-' + day;
+}
