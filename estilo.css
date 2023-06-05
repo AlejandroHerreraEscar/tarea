@@ -3,6 +3,7 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-color: aqua;
 }
 
 .container {
@@ -18,3 +19,8 @@ body {
   font-weight: bold;
   margin-top: 10px;
 }
+#chart-container {
+  max-width: 400px;
+  max-height: 400px;
+}
+

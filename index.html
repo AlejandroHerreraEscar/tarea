@@ -11,16 +11,18 @@
 <body>
   <div class="container">
     <h1>Indicadores Económicos</h1>
+    <input type="date" id="date-picker">
     <div class="form-group">
       <label for="indicator-select">Seleccione un indicador:</label>
       <select id="indicator-select" class="form-control" onchange="buscar_moneda(Option)">
       </select>
     </div>
     <div id="indicator-value"></div>
-    <canvas id="chart-container" width="300" height="300"></canvas> <!-- Agregamos este elemento para el gráfico -->
+    <canvas id="chart-container" width="400" height="400"></canvas> <!-- Agregamos este elemento para el gráfico -->
   </div>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="java.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
+
